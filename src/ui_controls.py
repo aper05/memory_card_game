@@ -1,7 +1,7 @@
 import pygame
 import time
-from asset_state import MENU, SETTINGS, PLAYING, MODE_SELECT, DIFFICULTY, BOARD_SELECT, LEVEL_COMPLETE, LEADERBOARD, load_custom_font
-import asset_state
+from .asset_state import MENU, SETTINGS, PLAYING, MODE_SELECT, DIFFICULTY, BOARD_SELECT, LEVEL_COMPLETE, LEADERBOARD, load_custom_font
+from . import asset_state
 
 LEVEL_CONFIGS = [
     {'num_pairs': 6, 'board_cols': 4, 'board_rows': 3},
@@ -825,7 +825,7 @@ class LeaderboardScreen:
         return False
 
     def draw(self, surface):
-        from highscores import get_top_scores
+        from .highscores import get_top_scores
 
         title = self.font.render("High Scores", True, (255, 255, 0))
         title_rect = title.get_rect(center=(self.screen_width // 2, 50))
@@ -848,7 +848,7 @@ class LeaderboardScreen:
 
         if selected_key == "level":
             all_scores = {}
-            from highscores import load_scores
+            from .highscores import load_scores
             raw = load_scores()
             for k, v in raw.items():
                 if k.startswith("level"):

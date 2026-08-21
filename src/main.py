@@ -1,10 +1,10 @@
 import pygame
 import os
 import time
-from asset_state import StateManager, AssetManager, SoundManager, MENU, PLAYING, SETTINGS, MODE_SELECT, DIFFICULTY, BOARD_SELECT, LEVEL_COMPLETE, LEADERBOARD, resource_path
-from ui_controls import MainMenu, SettingsScreen, ModeSelectScreen, DifficultySelectScreen, BoardSizeSelectScreen, LevelCompleteScreen, LeaderboardScreen, LEVEL_CONFIGS
-from game import Game
-from backgrounds import create_menu_background
+from .asset_state import StateManager, AssetManager, SoundManager, MENU, PLAYING, SETTINGS, MODE_SELECT, DIFFICULTY, BOARD_SELECT, LEVEL_COMPLETE, LEADERBOARD, resource_path
+from .ui_controls import MainMenu, SettingsScreen, ModeSelectScreen, DifficultySelectScreen, BoardSizeSelectScreen, LevelCompleteScreen, LeaderboardScreen, LEVEL_CONFIGS
+from .game import Game
+from .backgrounds import create_menu_background
 
 VIRTUAL_WIDTH = 1280
 VIRTUAL_HEIGHT = 720
@@ -14,7 +14,7 @@ def main():
     pygame.init()
     pygame.mixer.init()
 
-    import asset_state
+    from . import asset_state
     asset_state.sound_manager = SoundManager()
     sound_manager = asset_state.sound_manager
     sound_manager.set_volume(25)

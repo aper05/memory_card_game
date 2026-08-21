@@ -2,12 +2,12 @@ import pygame
 import random
 import os
 import time
-from ai_logic import AIPlayer
-from ui_controls import Slider
-import asset_state
-from asset_state import resource_path
-from physics_collision import get_card_under_mouse, flip_scale, appear_scale, disappear_scale, shuffle_scale, shuffle_positions
-from backgrounds import create_gameplay_background, draw_hud_background
+from .ai_logic import AIPlayer
+from .ui_controls import Slider
+from . import asset_state
+from .asset_state import resource_path
+from .physics_collision import get_card_under_mouse, flip_scale, appear_scale, disappear_scale, shuffle_scale, shuffle_positions
+from .backgrounds import create_gameplay_background, draw_hud_background
 
 CARD_FACES = [
     'A', '2', '3', '4', '5', '6', '7', '8', '9', '10',
@@ -651,7 +651,7 @@ class Game:
                         elapsed_time = time.time() - self.start_time
                         star_count = self._calculate_stars()
                         try:
-                            from highscores import save_score
+                            from .highscores import save_score
                             save_score(
                                 self.mode if self.mode != 'zen' else 'zen',
                                 self.settings.get('num_pairs', 15),

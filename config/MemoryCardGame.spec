@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['src/main.py'],
     pathex=[],
     binaries=[],
     datas=[('assets', 'assets')],
-    hiddenimports=['game', 'ui_controls', 'asset_state', 'ai_logic', 'physics_collision', 'backgrounds', 'highscores'],
+    hiddenimports=['src.game', 'src.ui_controls', 'src.asset_state', 'src.ai_logic', 'src.physics_collision', 'src.backgrounds', 'src.highscores'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

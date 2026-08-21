@@ -26,8 +26,8 @@ def _get_scores_file():
         # Packaged build: write to user data directory
         data_dir = _get_user_data_dir()
     else:
-        # Development: write next to this script
-        data_dir = os.path.dirname(os.path.abspath(__file__))
+        # Development: write to project root (parent of src/)
+        data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     os.makedirs(data_dir, exist_ok=True)
     return os.path.join(data_dir, "highscores.json")

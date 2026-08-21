@@ -142,10 +142,10 @@ git clone https://github.com/aper05/memory_card_game.git
 cd memory_card_game
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 
 # Run the game
-python main.py
+python -m src.main
 ```
 
 ---
@@ -226,25 +226,31 @@ python main.py
 
 ```
 memory_card_game/
-├── main.py              # Entry point, main loop, event dispatch (175 lines)
-├── game.py              # Core game logic, Card/Board/Game classes (1,025 lines)
-├── ui_controls.py       # All UI screens, Button/Slider widgets (889 lines)
-├── asset_state.py       # StateManager, AssetManager, SoundManager (124 lines)
-├── backgrounds.py       # Particle system, gradient backgrounds (215 lines)
-├── physics_collision.py # Hit-testing, animation math (90 lines)
-├── highscores.py        # JSON-based score persistence (80 lines)
-├── ai_logic.py          # AI opponent logic (87 lines)
-├── build.py             # Cross-platform build script (145 lines)
-├── build.bat            # Windows one-click build
-├── requirements.txt     # Python dependencies
-├── MemoryCardGame.spec  # PyInstaller configuration
-├── assets/              # Game assets (24 files)
+├── src/                   # Game source code
+│   ├── main.py            # Entry point, main loop, event dispatch (175 lines)
+│   ├── game.py            # Core game logic, Card/Board/Game classes (1,025 lines)
+│   ├── ui_controls.py     # All UI screens, Button/Slider widgets (889 lines)
+│   ├── asset_state.py     # StateManager, AssetManager, SoundManager (124 lines)
+│   ├── backgrounds.py     # Particle system, gradient backgrounds (215 lines)
+│   ├── physics_collision.py # Hit-testing, animation math (90 lines)
+│   ├── highscores.py      # JSON-based score persistence (80 lines)
+│   └── ai_logic.py        # AI opponent logic (87 lines)
+├── assets/                # Game assets (24 files)
 │   ├── font_Pix3M_ccby/
 │   ├── kenney_playing-cards-pack/
 │   ├── Chunky UI Sounds Demo/
 │   └── ver0.05/
-└── .github/workflows/
-    └── build.yml        # CI/CD pipeline (Windows, macOS, Linux)
+├── scripts/               # Build scripts
+│   ├── build.py           # Cross-platform build script (145 lines)
+│   └── build.bat          # Windows one-click build
+├── config/                # Configuration
+│   ├── requirements.txt   # Python dependencies
+│   └── MemoryCardGame.spec # PyInstaller configuration
+├── docs/                  # Documentation
+│   └── README.md
+├── .github/workflows/
+│   └── build.yml          # CI/CD pipeline (Windows, macOS, Linux)
+└── .gitignore
 ```
 
 ### Design Patterns
@@ -260,16 +266,16 @@ memory_card_game/
 ### Module Dependency Graph
 
 ```
-main.py
-├── asset_state.py (StateManager, SoundManager, AssetManager)
-├── ui_controls.py (All menu screens)
-├── game.py (Game class)
-│   ├── asset_state.py
-│   ├── physics_collision.py (Card hit-testing, animations)
-│   ├── backgrounds.py (Gameplay background)
-│   ├── ai_logic.py (AI opponent)
-│   └── highscores.py (Score persistence)
-└── backgrounds.py (Menu background)
+src/main.py
+├── src/asset_state.py (StateManager, SoundManager, AssetManager)
+├── src/ui_controls.py (All menu screens)
+├── src/game.py (Game class)
+│   ├── src/asset_state.py
+│   ├── src/physics_collision.py (Card hit-testing, animations)
+│   ├── src/backgrounds.py (Gameplay background)
+│   ├── src/ai_logic.py (AI opponent)
+│   └── src/highscores.py (Score persistence)
+└── src/backgrounds.py (Menu background)
 ```
 
 ---
@@ -280,16 +286,16 @@ main.py
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 
 # Build executable
-python build.py
+python scripts/build.py
 
 # Build and run
-python build.py --run
+python scripts/build.py --run
 
 # Clean build artifacts
-python build.py --clean
+python scripts/build.py --clean
 ```
 
 Output: `dist/MemoryCardGame/`

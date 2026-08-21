@@ -17,18 +17,18 @@ import platform
 import argparse
 
 GAME_NAME = "MemoryCardGame"
-MAIN_SCRIPT = "main.py"
+MAIN_SCRIPT = os.path.join("src", "main.py")
 ASSETS_DIR = "assets"
 
 # All source files that PyInstaller should include as hidden imports
 SOURCE_FILES = [
-    "game.py",
-    "ui_controls.py",
-    "asset_state.py",
-    "ai_logic.py",
-    "physics_collision.py",
-    "backgrounds.py",
-    "highscores.py",
+    "src.game",
+    "src.ui_controls",
+    "src.asset_state",
+    "src.ai_logic",
+    "src.physics_collision",
+    "src.backgrounds",
+    "src.highscores",
 ]
 
 
@@ -86,8 +86,7 @@ def build():
     ]
 
     # Add source files as hidden imports so PyInstaller finds them
-    for src in SOURCE_FILES:
-        module = src.replace(".py", "")
+    for module in SOURCE_FILES:
         cmd.append(f"--hidden-import={module}")
 
     print(f"\nBuilding {GAME_NAME}...")
@@ -127,7 +126,7 @@ def main():
     parser.add_argument("--run", action="store_true", help="Run the game after building")
     args = parser.parse_args()
 
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     check_dependencies()
 
