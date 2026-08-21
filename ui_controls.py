@@ -201,15 +201,15 @@ class MainMenu:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.state_manager = state_manager
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
-        self.title_font = load_custom_font(80)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
+        self.title_font = load_custom_font(70)
         self.title_surf = self.title_font.render("Memory Card Game", True, WHITE)
 
-        btn_width, btn_height = 200, 60
+        btn_width, btn_height = 280, 55
         center_x = screen_width // 2 - btn_width // 2
         start_y = screen_height // 2 - 80
-        spacing = 80
+        spacing = 75
 
         self.start_btn = Button(
             center_x, start_y, btn_width, btn_height,
@@ -264,10 +264,11 @@ class SettingsScreen:
         self.screen_height = screen_height
         self.state_manager = state_manager
         self.settings = settings
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
         self.show_how_to_play = False
         self.howto_fade_start = 0.0
+        self.virtual_mouse_pos = (0, 0)
 
         slider_width = 300
         slider_height = 20
@@ -280,7 +281,7 @@ class SettingsScreen:
             orientation='horizontal'
         )
 
-        btn_width = 250
+        btn_width = 280
         btn_height = 50
         self.how_to_play_btn = Button(
             screen_width // 2 - btn_width // 2,
@@ -312,12 +313,15 @@ class SettingsScreen:
         self.back_btn.update()
 
     def handle_event(self, event):
+        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            self.virtual_mouse_pos = event.pos
         if self.show_how_to_play:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                panel_h = self.screen_height - 80
                 back_rect = pygame.Rect(
                     self.screen_width // 2 - 80,
-                    self.screen_height - 100,
-                    160, 45
+                    20 + panel_h - 52,
+                    160, 40
                 )
                 if back_rect.collidepoint(event.pos):
                     self.close_how_to_play()
@@ -360,55 +364,83 @@ class SettingsScreen:
     def _draw_how_to_play_overlay(self, surface):
         if self.howto_fade_start == 0:
             self.howto_fade_start = time.time()
-        alpha = min(200, int((time.time() - self.howto_fade_start) / 0.4 * 200))
+        alpha = min(220, int((time.time() - self.howto_fade_start) / 0.4 * 220))
         overlay = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, alpha))
         surface.blit(overlay, (0, 0))
 
-        title_font = load_custom_font(48)
-        text_font = load_custom_font(28)
-        title = title_font.render("How to Play", True, WHITE)
-        title_rect = title.get_rect(center=(self.screen_width // 2, 50))
+        sw, sh = self.screen_width, self.screen_height
+        panel_w = min(750, sw - 80)
+        panel_h = sh - 80
+        panel_x = (sw - panel_w) // 2
+        panel_y = 20
+
+        panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        pygame.draw.rect(panel, (15, 20, 45, 230), (0, 0, panel_w, panel_h), border_radius=16)
+        pygame.draw.rect(panel, (60, 80, 160, 200), (0, 0, panel_w, panel_h), 2, border_radius=16)
+        surface.blit(panel, (panel_x, panel_y))
+
+        title_font = load_custom_font(40)
+        header_font = load_custom_font(30)
+        body_font = load_custom_font(24)
+
+        title = title_font.render("How to Play", True, (100, 180, 255))
+        title_rect = title.get_rect(center=(sw // 2, panel_y + 28))
         surface.blit(title, title_rect)
 
-        rules = [
-            "Flip over two cards at a time.",
-            "If they match, they disappear and you score points.",
-            "If they don't match, they flip back after a short time.",
-            "Find all pairs to win the game!",
-            "",
-            "--- Game Modes ---",
-            "",
-            "1 Player: Match all pairs before time runs out.",
-            "  Score points by matching cards. Consecutive matches",
-            "  increase your combo multiplier. Use hints (3 per game)",
-            "  to reveal a matching pair. Board size affects timer.",
-            "",
-            "2 Player: Take turns flipping two cards each turn.",
-            "  If you match, you keep your turn. If not, play passes",
-            "  to the other player. The player with the most matches wins.",
-            "",
-            "VS AI: Compete against the computer.",
-            "  Difficulty affects how well the AI remembers cards.",
-            "  Easy: AI forgets often. Hard: AI has near-perfect memory.",
-            "",
-            "Level Mode: Progress through 3 levels of increasing size.",
-            "  Earn stars based on how few moves you take.",
-            "  3 stars: moves <= pairs + 2",
-            "",
-            "Zen: No timer, no pressure. Just match pairs at your own pace.",
-        ]
-        y = 120
-        for line in rules:
-            text = text_font.render(line, True, WHITE)
-            text_rect = text.get_rect(center=(self.screen_width // 2, y))
-            surface.blit(text, text_rect)
-            y += 35
+        underline_y = panel_y + 50
+        pygame.draw.line(surface, (60, 80, 160), (sw // 2 - 100, underline_y), (sw // 2 + 100, underline_y), 2)
 
-        back_rect = pygame.Rect(self.screen_width // 2 - 80, self.screen_height - 100, 160, 45)
-        pygame.draw.rect(surface, (0, 100, 200), back_rect, border_radius=8)
-        pygame.draw.rect(surface, WHITE, back_rect, 2, border_radius=8)
-        back_text = self.small_font.render("Back", True, WHITE)
+        y = panel_y + 68
+        cx = sw // 2
+        sp = 26
+
+        sections = [
+            {
+                "title": None,
+                "lines": [
+                    ("\u2022  Flip two cards at a time. Match them to score.", (220, 220, 220)),
+                    ("\u2022  Unmatched cards flip back after a short time.", (220, 220, 220)),
+                    ("\u2022  Find all pairs before time runs out to win!", (220, 220, 220)),
+                ],
+            },
+            {
+                "title": "Game Modes",
+                "lines": [
+                    ("\u25b6  1 Player \u2014 Match pairs against the clock. Use hints to reveal pairs.", (100, 220, 150)),
+                    ("     Streaks increase your score combo multiplier.", (170, 170, 170)),
+                    ("\u25b6  2 Player \u2014 Take turns flipping cards. Match to keep your turn.", (100, 200, 255)),
+                    ("\u25b6  VS AI \u2014 Compete against the computer. Higher difficulty = smarter AI.", (255, 180, 100)),
+                    ("\u25b6  Level Mode \u2014 3 levels of increasing size. Earn up to 3 stars.", (255, 200, 100)),
+                    ("\u25b6  Zen \u2014 No timer, no pressure. Match pairs at your own pace.", (200, 150, 255)),
+                ],
+            },
+        ]
+
+        for section in sections:
+            if section["title"]:
+                y += 6
+                hdr = header_font.render(section["title"], True, (100, 180, 255))
+                hdr_rect = hdr.get_rect(center=(cx, y))
+                surface.blit(hdr, hdr_rect)
+                y += 32
+            for text, color in section["lines"]:
+                line_surf = body_font.render(text, True, color)
+                line_rect = line_surf.get_rect(center=(cx, y))
+                surface.blit(line_surf, line_rect)
+                y += sp
+
+        back_rect = pygame.Rect(sw // 2 - 80, panel_y + panel_h - 52, 160, 40)
+        mouse_pos = self.virtual_mouse_pos
+        if back_rect.collidepoint(mouse_pos):
+            back_color = (50, 90, 180)
+            back_border = (100, 140, 220)
+        else:
+            back_color = (35, 50, 90)
+            back_border = (60, 80, 140)
+        pygame.draw.rect(surface, back_color, back_rect, border_radius=10)
+        pygame.draw.rect(surface, back_border, back_rect, 2, border_radius=10)
+        back_text = self.small_font.render("Back", True, (255, 255, 255))
         back_text_rect = back_text.get_rect(center=back_rect.center)
         surface.blit(back_text, back_text_rect)
 
@@ -419,13 +451,13 @@ class ModeSelectScreen:
         self.screen_height = screen_height
         self.state_manager = state_manager
         self.settings = settings
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
 
-        btn_width, btn_height = 250, 55
+        btn_width, btn_height = 280, 50
         center_x = screen_width // 2 - btn_width // 2
         start_y = screen_height // 2 - 150
-        spacing = 70
+        spacing = 65
 
         self.one_player_btn = Button(
             center_x, start_y, btn_width, btn_height,
@@ -507,13 +539,13 @@ class DifficultySelectScreen:
         self.screen_height = screen_height
         self.state_manager = state_manager
         self.settings = settings
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
 
-        btn_width, btn_height = 250, 60
+        btn_width, btn_height = 260, 55
         center_x = screen_width // 2 - btn_width // 2
         start_y = screen_height // 2 - 80
-        spacing = 80
+        spacing = 75
 
         self.easy_btn = Button(
             center_x, start_y, btn_width, btn_height,
@@ -569,13 +601,13 @@ class BoardSizeSelectScreen:
         self.screen_height = screen_height
         self.state_manager = state_manager
         self.settings = settings
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
 
-        btn_width, btn_height = 300, 60
+        btn_width, btn_height = 260, 55
         center_x = screen_width // 2 - btn_width // 2
-        start_y = screen_height // 2 - 120
-        spacing = 90
+        start_y = screen_height // 2 - 100
+        spacing = 75
 
         self.easy_btn = Button(
             center_x, start_y, btn_width, btn_height,
@@ -633,15 +665,15 @@ class LevelCompleteScreen:
         self.screen_height = screen_height
         self.state_manager = state_manager
         self.settings = settings
-        self.font = load_custom_font(60)
-        self.small_font = load_custom_font(40)
+        self.font = load_custom_font(50)
+        self.small_font = load_custom_font(36)
         self.big_font = load_custom_font(80)
         self.star_font = load_custom_font(100)
 
-        btn_width, btn_height = 200, 55
+        btn_width, btn_height = 240, 50
         center_x = screen_width // 2 - btn_width // 2
         start_y = screen_height // 2 + 120
-        spacing = 75
+        spacing = 70
 
         self.next_btn = Button(
             center_x, start_y, btn_width, btn_height,
@@ -747,12 +779,12 @@ class LeaderboardScreen:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.state_manager = state_manager
-        self.font = load_custom_font(60)
+        self.font = load_custom_font(50)
         self.small_font = load_custom_font(30)
         self.tiny_font = load_custom_font(24)
 
         self.back_btn = Button(
-            screen_width // 2 - 100, screen_height - 80, 200, 50,
+            screen_width // 2 - 120, screen_height - 80, 240, 50,
             "Back", self.font, action=self.go_back
         )
 
