@@ -16,6 +16,9 @@ SETTINGS = "SETTINGS"
 GAME_OVER = "GAME_OVER"
 MODE_SELECT = "MODE_SELECT"
 DIFFICULTY = "DIFFICULTY"
+BOARD_SELECT = "BOARD_SELECT"
+LEVEL_COMPLETE = "LEVEL_COMPLETE"
+LEADERBOARD = "LEADERBOARD"
 
 def load_custom_font(size):
     font_path = resource_path(os.path.join("assets", "font_Pix3M_ccby",
@@ -67,6 +70,7 @@ class SoundManager:
             'button': resource_path(os.path.join("assets", "Chunky UI Sounds Demo", "Chunky UI Sounds Demo", "Tiny Mechanical Switch On.ogg")),
             'match': resource_path(os.path.join("assets", "Chunky UI Sounds Demo", "Chunky UI Sounds Demo", "Digital Glass Success 2.ogg")),
             'mismatch': resource_path(os.path.join("assets", "Chunky UI Sounds Demo", "Chunky UI Sounds Demo", "Mechanical Switch Toggle 1.ogg")),
+            'shuffle': resource_path(os.path.join("assets", "ver0.05", "shuffling.wav")),
         }
 
         self.sounds = {}
@@ -111,6 +115,10 @@ class SoundManager:
     def play_mismatch(self):
         if self.sounds.get('mismatch'):
             self.sounds['mismatch'].play()
+
+    def play_shuffle(self):
+        if self.sounds.get('shuffle'):
+            self.sounds['shuffle'].play()
 
 
 # Global placeholder – will be replaced in main.py after mixer.init()

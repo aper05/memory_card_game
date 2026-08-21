@@ -1,11 +1,14 @@
 import pygame
 import os
-from asset_state import StateManager, AssetManager, SoundManager, MENU, PLAYING, SETTINGS, MODE_SELECT, DIFFICULTY, resource_path
-from ui_controls import MainMenu, SettingsScreen, ModeSelectScreen, DifficultySelectScreen
+import time
+from asset_state import StateManager, AssetManager, SoundManager, MENU, PLAYING, SETTINGS, MODE_SELECT, DIFFICULTY, BOARD_SELECT, LEVEL_COMPLETE, LEADERBOARD, resource_path
+from ui_controls import MainMenu, SettingsScreen, ModeSelectScreen, DifficultySelectScreen, BoardSizeSelectScreen, LevelCompleteScreen, LeaderboardScreen, LEVEL_CONFIGS
 from game import Game
+from backgrounds import create_menu_background
 
 VIRTUAL_WIDTH = 1280
 VIRTUAL_HEIGHT = 720
+
 
 def main():
     pygame.init()
@@ -14,7 +17,7 @@ def main():
     import asset_state
     asset_state.sound_manager = SoundManager()
     sound_manager = asset_state.sound_manager
-    sound_manager.set_volume(25)                          # <-- default volume 25%
+    sound_manager.set_volume(25)
     sound_manager.play_music()
 
     screen = pygame.display.set_mode((VIRTUAL_WIDTH, VIRTUAL_HEIGHT), pygame.RESIZABLE)
@@ -27,13 +30,15 @@ def main():
     asset_manager = AssetManager()
 
     base_dir = os.path.dirname(__file__)
-    bg_path = resource_path(os.path.join("assets", "ver0.05", "menu.png"))
-    menu_bg = asset_manager.load_image(bg_path, size=(VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+    menu_bg = create_menu_background(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 
     main_menu = MainMenu(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager)
     settings_screen = SettingsScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager, game_settings)
     mode_select_screen = ModeSelectScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager, game_settings)
     difficulty_select_screen = DifficultySelectScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager, game_settings)
+    board_select_screen = BoardSizeSelectScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager, game_settings)
+    level_complete_screen = LevelCompleteScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager, game_settings)
+    leaderboard_screen = LeaderboardScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, state_manager)
 
     current_game = None
     running = True
@@ -81,13 +86,19 @@ def main():
                 mode_select_screen.handle_event(scaled_event)
             elif state_manager.current_state == DIFFICULTY:
                 difficulty_select_screen.handle_event(scaled_event)
+            elif state_manager.current_state == BOARD_SELECT:
+                board_select_screen.handle_event(scaled_event)
+            elif state_manager.current_state == LEVEL_COMPLETE:
+                level_complete_screen.handle_event(scaled_event)
+            elif state_manager.current_state == LEADERBOARD:
+                leaderboard_screen.handle_event(scaled_event)
             elif state_manager.current_state == PLAYING:
-                if current_game is None:
-                    current_game = Game(virtual_screen, game_settings, (VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
-                current_game.handle_event(scaled_event)
-                # ESC is now handled inside Game to open settings
+                if current_game is not None:
+                    current_game.handle_event(scaled_event)
 
-        # Update screens for button animations
+        if state_manager.current_state == PLAYING and current_game is None:
+            current_game = Game(virtual_screen, game_settings, (VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+
         if state_manager.current_state == MENU:
             main_menu.update()
         elif state_manager.current_state == SETTINGS:
@@ -96,15 +107,44 @@ def main():
             mode_select_screen.update()
         elif state_manager.current_state == DIFFICULTY:
             difficulty_select_screen.update()
+        elif state_manager.current_state == BOARD_SELECT:
+            board_select_screen.update()
+        elif state_manager.current_state == LEVEL_COMPLETE:
+            level_complete_screen.update()
+        elif state_manager.current_state == LEADERBOARD:
+            leaderboard_screen.update()
 
         if state_manager.current_state == PLAYING and current_game:
             current_game.update()
-            if current_game.quit_to_menu:
+
+            if current_game.game_over and current_game.game_over_shown:
+                if game_settings.get('game_mode') == 'level':
+                    current_level = game_settings.get('current_level', 1)
+                    is_final = current_level >= len(LEVEL_CONFIGS)
+                    level_complete_screen.set_level_data(
+                        current_level,
+                        current_game.moves,
+                        time.time() - current_game.start_time,
+                        game_settings.get('num_pairs', 15),
+                        is_final=is_final
+                    )
+                    current_game = None
+                    state_manager.change_state(LEVEL_COMPLETE)
+                    continue
+
+            if current_game and current_game.quit_to_menu:
                 current_game = None
                 state_manager.change_state(MENU)
 
-        # Drawing
-        virtual_screen.blit(menu_bg, (0, 0))
+        if state_manager.current_state == PLAYING and current_game is None and game_settings.get('game_mode') == 'level':
+            current_level = game_settings.get('current_level', 1)
+            if 1 <= current_level <= len(LEVEL_CONFIGS):
+                config = LEVEL_CONFIGS[current_level - 1]
+                game_settings.update(config)
+
+        dt = clock.get_time() / 1000.0
+        menu_bg.update(dt)
+        menu_bg.draw(virtual_screen)
         if state_manager.current_state == MENU:
             main_menu.draw(virtual_screen)
         elif state_manager.current_state == SETTINGS:
@@ -113,6 +153,12 @@ def main():
             mode_select_screen.draw(virtual_screen)
         elif state_manager.current_state == DIFFICULTY:
             difficulty_select_screen.draw(virtual_screen)
+        elif state_manager.current_state == BOARD_SELECT:
+            board_select_screen.draw(virtual_screen)
+        elif state_manager.current_state == LEVEL_COMPLETE:
+            level_complete_screen.draw(virtual_screen)
+        elif state_manager.current_state == LEADERBOARD:
+            leaderboard_screen.draw(virtual_screen)
         elif state_manager.current_state == PLAYING and current_game:
             current_game.draw()
 
@@ -123,6 +169,7 @@ def main():
         clock.tick(60)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
