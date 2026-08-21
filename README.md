@@ -1,11 +1,11 @@
 # Memory Card Game
 
-A feature-rich memory card matching game built with Python and Pygame, playable on **Windows**, **macOS**, **Linux**, and **Android**.
+A feature-rich memory card matching game built with Python and Pygame, playable on **Windows**, **macOS**, and **Linux**.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
 ![Pygame](https://img.shields.io/badge/Pygame-2.5+-green?logo=pygame&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android-lightgrey)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
 ---
 
@@ -30,11 +30,9 @@ A feature-rich memory card matching game built with Python and Pygame, playable 
 
 ## Game Overview
 
-Memory Card Game is a classic card-matching puzzle where players flip cards to find matching pairs. Built entirely in Python using the Pygame library, it features polished visuals, smooth animations, multiple game modes, and an AI opponent. The game is designed to run seamlessly across desktop and mobile platforms.
+Memory Card Game is a classic card-matching puzzle where players flip cards to find matching pairs. Built entirely in Python using the Pygame library, it features polished visuals, smooth animations, multiple game modes, and an AI opponent.
 
-**Repository:**
-- PC: `https://github.com/aper05/memory_card_game.git`
-- Mobile: `https://github.com/aper05/memory-card-game-mobile.git`
+**Repository:** `https://github.com/aper05/memory_card_game.git`
 
 ---
 
@@ -98,12 +96,6 @@ Memory Card Game is a classic card-matching puzzle where players flip cards to f
 - **Responsive Design** - 1280x720 virtual resolution with aspect-ratio-preserving scaling
 - **Custom Font** - Pix3M Romulus bitmap pixel font
 
-### Mobile-Specific Features
-- **Touch Input** - Full touch event mapping (FINGERDOWN/UP/MOTION to mouse events)
-- **Fullscreen Display** - Native resolution with letterboxing
-- **Android Back Button** - Navigates back through screens
-- **Mobile Storage** - Persistent high scores on Android
-
 ---
 
 ## System Requirements
@@ -119,17 +111,6 @@ Memory Card Game is a classic card-matching puzzle where players flip cards to f
 | **Graphics** | OpenGL 2.0 compatible | OpenGL 3.0+ |
 | **Display** | 800x600 | 1280x720 or higher |
 | **Sound** | Any | Any |
-
-### Android
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **OS** | Android 7.0 (API 24) | Android 10+ (API 29) |
-| **Processor** | ARM64 (arm64-v8a) | ARM64 octa-core |
-| **Memory** | 2 GB RAM | 4 GB RAM |
-| **Storage** | 100 MB available space | 200 MB available space |
-| **Display** | 480x800 | 1080x1920 or higher |
-| **Permissions** | None (offline game) | None |
 
 ---
 
@@ -152,12 +133,6 @@ Memory Card Game is a classic card-matching puzzle where players flip cards to f
 2. Extract the ZIP file
 3. Make executable: `chmod +x MemoryCardGame`
 4. Run: `./MemoryCardGame`
-
-#### Android
-1. Download `memorycardgame-1.0.0-arm64-v8a-debug.apk` from [Releases](https://github.com/aper05/memory-card-game-mobile/releases)
-2. Transfer to your Android device
-3. Enable **Settings > Security > Install from unknown sources**
-4. Open the APK file and install
 
 ### From Source (Development)
 
@@ -192,9 +167,6 @@ python main.py
 | PC | Flip card | Left click |
 | PC | Open settings | ESC key or settings button |
 | PC | Navigate menus | Left click |
-| Mobile | Flip card | Tap |
-| Mobile | Open settings | Back button or settings button |
-| Mobile | Navigate menus | Tap |
 
 ### Scoring
 - **Base Points** - 5 points per match
@@ -230,8 +202,6 @@ python main.py
 | Python | 3.10+ | Core programming language |
 | Pygame / pygame-ce | 2.5+ | Game engine, rendering, audio |
 | PyInstaller | 6.0+ | Desktop executable packaging |
-| Buildozer | 1.6+ | Android APK packaging |
-| python-for-android | Latest | Android Python runtime |
 
 ### Development Tools
 | Tool | Purpose |
@@ -274,7 +244,7 @@ memory_card_game/
 │   ├── Chunky UI Sounds Demo/
 │   └── ver0.05/
 └── .github/workflows/
-    └── build.yml        # CI/CD pipeline
+    └── build.yml        # CI/CD pipeline (Windows, macOS, Linux)
 ```
 
 ### Design Patterns
@@ -324,21 +294,6 @@ python build.py --clean
 
 Output: `dist/MemoryCardGame/`
 
-### Android
-
-```bash
-# Install buildozer
-pip install buildozer
-
-# Build APK (requires Linux with Android SDK)
-cd ../"Memory Card Game - Mobile"
-buildozer android debug
-
-# Output: bin/*.apk
-```
-
-**Note:** Android builds must run from a path without spaces. Use the provided build script or a symlink.
-
 ### CI/CD
 
 The project includes GitHub Actions workflows that automatically build for:
@@ -346,50 +301,12 @@ The project includes GitHub Actions workflows that automatically build for:
 | Platform | Trigger | Output |
 |----------|---------|--------|
 | **PC** | Push to main/master | Windows .exe, macOS .app, Linux binary |
-| **Android** | Push to main | .apk file |
 
 Build artifacts are available as downloadable ZIP files on the Actions page.
 
 ---
 
 ## Store Publishing Guide
-
-### Google Play Store
-
-#### Requirements
-- **Google Play Developer Account** - $25 one-time fee
-- **App Icon** - 512x512 PNG (adaptive icon recommended)
-- **Feature Graphic** - 1024x500 PNG
-- **Screenshots** - At least 2, up to 8 (phone + tablet)
-- **Privacy Policy** - URL (required even for offline games)
-- **Content Rating** - Complete IARC questionnaire
-- **Target Audience** - Declare if designed for children under 13
-
-#### Store Listing
-```
-Title: Memory Card Game
-Short Description: Classic card matching puzzle with 5 game modes, AI opponent, and beautiful animations
-Full Description: [See Features section above]
-Category: Games > Puzzle
-Tags: memory, cards, puzzle, matching, brain game
-```
-
-#### Technical Requirements
-- **APK/AAB** - Use App Bundle (AAB) for production
-- **Target API** - 33+ (required by Google Play)
-- **Min API** - 24 (Android 7.0)
-- **64-bit** - Required (arm64-v8a provided)
-- **Permissions** - None needed (offline game)
-
-#### Steps
-1. Build release APK: `buildozer android release`
-2. Sign with keystore (buildozer handles this)
-3. Create listing at [Google Play Console](https://play.google.com/console)
-4. Upload AAB/APK
-5. Fill in store listing, screenshots, content rating
-6. Submit for review
-
----
 
 ### Steam
 
@@ -465,49 +382,10 @@ Short Description: Classic card matching with 5 modes, AI opponent, and 2-player
 
 #### Steps
 1. Create project at [itch.io](https://itch.io)
-2. Upload builds (Windows, macOS, Linux, Android)
+2. Upload builds (Windows, macOS, Linux)
 3. Add description, screenshots, cover image
 4. Set pricing (free or paid)
 5. Publish immediately (no review process)
-
----
-
-### Apple App Store (iOS)
-
-#### Requirements
-- **Apple Developer Account** - $99/year
-- **macOS with Xcode** - Required for building
-- **App Icon** - Multiple sizes (1024x1024, etc.)
-- **Screenshots** - For each device size
-- **Privacy Policy** - URL required
-
-#### Technical Notes
-- iOS build requires `pygame-ios` toolchain
-- Must be built on macOS with Xcode installed
-- App Store review process (1-3 days typical)
-
-#### Steps
-1. Set up Apple Developer account
-2. Install Xcode and pygame-ios
-3. Build iOS project
-4. Archive and upload via Xcode
-5. Configure App Store Connect listing
-6. Submit for review
-
----
-
-### Amazon Appstore
-
-#### Requirements
-- **Amazon Developer Account** - Free
-- Similar to Google Play but for Fire tablets and Android
-- Builds can be APK or AAB
-
-#### Steps
-1. Create account at [Amazon Appstore](https://developer.amazon.com/apps-and-games)
-2. Upload APK/AAB
-3. Fill store listing
-4. Submit for review
 
 ---
 
@@ -564,7 +442,6 @@ retro, pixel art, casual, family, kids, singleplayer, multiplayer
 - **Pygame** - Pete Shinners, pygame community (LGPL)
 - **pygame-ce** - Community Edition (LGPL)
 - **PyInstaller** - Hartmut Goebel, contributors (Apache 2.0)
-- **Buildozer** - Kivy Team (MIT)
 
 ### License
 This project is released under the **MIT License**.
@@ -587,7 +464,6 @@ Third-party assets retain their original licenses (see Credits).
 - Particle effects and gradient backgrounds
 - Sound effects and background music
 - Cross-platform builds (Windows, macOS, Linux)
-- Android mobile build with touch support
 - CI/CD with GitHub Actions
 
 ### v0.1.0 (Development)
@@ -601,8 +477,7 @@ Third-party assets retain their original licenses (see Credits).
 
 **aper05**
 - GitHub: [github.com/aper05](https://github.com/aper05)
-- Project (PC): [memory_card_game](https://github.com/aper05/memory_card_game)
-- Project (Mobile): [memory-card-game-mobile](https://github.com/aper05/memory-card-game-mobile)
+- Project: [memory_card_game](https://github.com/aper05/memory_card_game)
 
 ---
 
